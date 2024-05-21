@@ -39,4 +39,8 @@ public class BoardService {
     public Board get(Integer id) {
         return boardMapper.selectById(id);
     }
+
+    public void remove(Integer id) {
+        boardMapper.deleteById(id);
+    }
 }

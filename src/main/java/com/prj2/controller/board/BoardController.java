@@ -35,7 +35,18 @@ public class BoardController {
     }
 
     @GetMapping("/{id}")
-    public Board get(@PathVariable Integer id) {
-        return boardService.get(id);
+    public ResponseEntity get(@PathVariable Integer id) {
+        Board board = boardService.get(id);
+
+        if (board == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok().body(board);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Integer id) {
+        boardService.remove(id);
     }
 }
