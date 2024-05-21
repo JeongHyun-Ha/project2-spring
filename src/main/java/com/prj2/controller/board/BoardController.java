@@ -4,6 +4,7 @@ import com.prj2.domain.board.Board;
 import com.prj2.service.board.BoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,9 +19,14 @@ public class BoardController {
     private final BoardService boardService;
 
     @PostMapping("/add")
-    public String add(@RequestBody Board board) {
-        boardService.add(board);
+    public ResponseEntity<Board> add(@RequestBody Board board) {
 
-        return null;
+        // 검증
+        if (!boardService.validate(board)) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        boardService.add(board);
+        return ResponseEntity.ok().build();
     }
 }
