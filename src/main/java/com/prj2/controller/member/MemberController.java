@@ -5,6 +5,8 @@ import com.prj2.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -16,13 +18,14 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/signup")
-    public ResponseEntity signup(@RequestBody Member member) {
-        if (memberService.validate(member)) {
-            memberService.add(member);
-            return ResponseEntity.ok().build();
-        } else {
+    public ResponseEntity signup(@Validated @RequestBody Member member, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            log.info("bindingResult={}", bindingResult);
             return ResponseEntity.badRequest().build();
         }
+        log.info("member={}", member);
+        memberService.add(member);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping(value = "/check", params = "email")
