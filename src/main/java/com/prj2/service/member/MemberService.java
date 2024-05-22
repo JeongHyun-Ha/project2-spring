@@ -4,6 +4,7 @@ import com.prj2.domain.member.Member;
 import com.prj2.mapper.member.MemberMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,8 +15,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 
     private final MemberMapper mapper;
+    private final BCryptPasswordEncoder encoder;
 
     public void add(Member member) {
+        member.setPassword(encoder.encode(member.getPassword()));
+        member.setEmail(member.getEmail().trim());
+        member.setNickName(member.getNickName().trim());
+
         mapper.insert(member);
     }
 
@@ -31,13 +37,16 @@ public class MemberService {
         if (member.getEmail() == null || member.getEmail().isBlank()) {
             return false;
         }
+
         if (member.getNickName() == null || member.getNickName().isBlank()) {
             return false;
         }
 
-        String emailPattern = """
-                [a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*;
-                """;
+        if (member.getPassword() == null || member.getPassword().isBlank()) {
+            return false;
+        }
+
+        String emailPattern = "[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*";
 
         if (!member.getEmail().trim().matches(emailPattern)) {
             return false;
