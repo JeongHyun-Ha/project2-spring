@@ -8,6 +8,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Slf4j
 @RequiredArgsConstructor
 @Service
@@ -31,5 +33,9 @@ public class MemberService {
 
     public Member getByNickName(String nickName) {
         return mapper.selectByNickName(nickName.trim());
+    }
+
+    public List<Member> list() {
+        return mapper.selectAll();
     }
 }

@@ -9,6 +9,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RequiredArgsConstructor
 @RestController
@@ -44,5 +46,10 @@ public class MemberController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/list")
+    public List<Member> list() {
+        return memberService.list();
     }
 }
