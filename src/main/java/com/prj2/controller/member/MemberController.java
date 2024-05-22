@@ -16,8 +16,13 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/signup")
-    public void signup(@RequestBody Member member) {
-        memberService.add(member);
+    public ResponseEntity signup(@RequestBody Member member) {
+        if (memberService.validate(member)) {
+            memberService.add(member);
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @GetMapping(value = "/check", params = "email")
