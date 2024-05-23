@@ -4,6 +4,7 @@ import com.prj2.domain.member.Member;
 import com.prj2.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
@@ -51,5 +52,25 @@ public class MemberController {
     @GetMapping("/list")
     public List<Member> list() {
         return memberService.list();
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Member> info(@PathVariable Integer id) {
+
+        Member member = memberService.getById(id);
+        if (member == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok().body(member);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity delete(@RequestBody Member member) {
+        if (memberService.hasAccess(member)) {
+            memberService.remove(member.getId());
+            return ResponseEntity.ok().build();
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 }

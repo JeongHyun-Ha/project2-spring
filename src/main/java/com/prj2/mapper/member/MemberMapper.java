@@ -1,6 +1,7 @@
 package com.prj2.mapper.member;
 
 import com.prj2.domain.member.Member;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -24,4 +25,13 @@ public interface MemberMapper {
 
     @Select("SELECT * FROM member ORDER BY id DESC ")
     List<Member> selectAll();
+
+    @Select("""
+            SELECT *
+            FROM member WHERE id=#{id}
+            """)
+    Member selectById(Integer id);
+
+    @Delete("DELETE FROM member WHERE id=#{id}")
+    void deleteById(Integer id);
 }

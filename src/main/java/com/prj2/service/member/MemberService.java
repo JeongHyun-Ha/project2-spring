@@ -16,11 +16,11 @@ import java.util.List;
 @Transactional(rollbackFor = Exception.class)
 public class MemberService {
 
-    private final MemberMapper mapper;
-    private final BCryptPasswordEncoder encoder;
+    final MemberMapper mapper;
+    final BCryptPasswordEncoder passwordEncoder;
 
     public void add(Member member) {
-        member.setPassword(encoder.encode(member.getPassword()));
+        member.setPassword(passwordEncoder.encode(member.getPassword()));
         member.setEmail(member.getEmail().trim());
         member.setNickName(member.getNickName().trim());
 
@@ -35,7 +35,47 @@ public class MemberService {
         return mapper.selectByNickName(nickName.trim());
     }
 
+    public boolean validate(Member member) {
+        if (member.getEmail() == null || member.getEmail().isBlank()) {
+            return false;
+        }
+
+        if (member.getNickName() == null || member.getNickName().isBlank()) {
+            return false;
+        }
+
+        if (member.getPassword() == null || member.getPassword().isBlank()) {
+            return false;
+        }
+
+        String emailPattern = "[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*";
+
+        if (!member.getEmail().trim().matches(emailPattern)) {
+            return false;
+        }
+
+        return true;
+    }
+
     public List<Member> list() {
         return mapper.selectAll();
+    }
+
+    public Member getById(Integer id) {
+        return mapper.selectById(id);
+    }
+
+    public void remove(Integer id) {
+        mapper.deleteById(id);
+    }
+
+    public boolean hasAccess(Member member) {
+        Member dbMember = mapper.selectById(member.getId());
+
+        if (dbMember == null) {
+            return false;
+        }
+
+        return passwordEncoder.matches(member.getPassword(), dbMember.getPassword());
     }
 }
