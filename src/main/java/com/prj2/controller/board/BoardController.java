@@ -18,7 +18,7 @@ public class BoardController {
     private final BoardService boardService;
 
     @PostMapping("/add")
-    public ResponseEntity<Board> add(@RequestBody Board board) throws InterruptedException {
+    public ResponseEntity<Board> add(@RequestBody Board board) {
 
         // 검증
         if (!boardService.validate(board)) {

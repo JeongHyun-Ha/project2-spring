@@ -69,6 +69,18 @@ public class MemberService {
         mapper.deleteById(id);
     }
 
+    public void edit(Member member) {
+        if (member.getPassword() != null && member.getPassword().length() > 0) {
+            log.info("새로운 암호");
+            member.setPassword(passwordEncoder.encode(member.getPassword()));
+        } else {
+            log.info("기존 암호");
+            Member dbMember = mapper.selectById(member.getId());
+            member.setPassword(dbMember.getPassword());
+        }
+        mapper.update(member);
+    }
+
     public boolean hasAccess(Member member) {
         Member dbMember = mapper.selectById(member.getId());
 
@@ -77,5 +89,15 @@ public class MemberService {
         }
 
         return passwordEncoder.matches(member.getPassword(), dbMember.getPassword());
+    }
+
+    public boolean hasAccessEdit(Member member) {
+        Member dbMember = mapper.selectById(member.getId());
+
+        if (dbMember == null) {
+            return false;
+        }
+
+        return passwordEncoder.matches(member.getOldPassword(), dbMember.getPassword());
     }
 }

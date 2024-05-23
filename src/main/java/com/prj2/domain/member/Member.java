@@ -13,6 +13,7 @@ public class Member {
     private Integer id;
     private String email;
     private String password;
+    private String oldPassword;
     private String nickName;
     private LocalDateTime inserted;
 

@@ -6,8 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,9 +19,8 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/signup")
-    public ResponseEntity signup(@Validated @RequestBody Member member, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            log.info("bindingResult={}", bindingResult);
+    public ResponseEntity signup(@RequestBody Member member) {
+        if (memberService.validate(member)) {
             return ResponseEntity.badRequest().build();
         }
         log.info("member={}", member);
@@ -71,6 +68,18 @@ public class MemberController {
             return ResponseEntity.ok().build();
         }
 
+        // todo : forbidden으로 수정
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
+
+    @PutMapping("/edit")
+    public ResponseEntity<Member> edit(@RequestBody Member member) {
+        if (!memberService.hasAccessEdit(member)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        memberService.edit(member);
+        return ResponseEntity.ok().build();
+    }
+
 }
