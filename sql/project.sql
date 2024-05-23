@@ -1,6 +1,6 @@
 USE prj2;
 
-# 게시물 테이블 생성
+# board 테이블 생성
 CREATE TABLE board
 (
     id       INT PRIMARY KEY AUTO_INCREMENT,
@@ -12,7 +12,18 @@ CREATE TABLE board
 
 SELECT *
 FROM board;
-
+# board 테이블 수정
+# writer column 지우기
+ALTER TABLE board
+    DROP COLUMN writer;
+ALTER TABLE board
+    ADD COLUMN member_id INT REFERENCES member (id) AFTER content;
+UPDATE board
+SET member_id = (SELECT id FROM member ORDER BY id DESC LIMIT 1)
+WHERE id > 0;
+ALTER TABLE board
+    MODIFY COLUMN member_id INT NOT NULL;
+desc board;
 # 회원 테이블 생성
 CREATE TABLE member
 (

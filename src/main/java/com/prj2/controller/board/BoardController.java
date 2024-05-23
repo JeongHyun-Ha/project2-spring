@@ -5,6 +5,8 @@ import com.prj2.service.board.BoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,14 +20,16 @@ public class BoardController {
     private final BoardService boardService;
 
     @PostMapping("/add")
-    public ResponseEntity<Board> add(@RequestBody Board board) {
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Board> add(@RequestBody Board board,
+                                     Authentication authentication) {
 
         // 검증
         if (!boardService.validate(board)) {
             return ResponseEntity.badRequest().build();
         }
 
-        boardService.add(board);
+        boardService.add(board, authentication);
         return ResponseEntity.ok().build();
     }
 
@@ -51,7 +55,8 @@ public class BoardController {
     }
 
     @PutMapping("/edit")
-    public ResponseEntity edit(@RequestBody Board board) {
+    public ResponseEntity edit(@RequestBody Board board,
+                               Authentication authentication) {
         if (!boardService.validate(board)) {
             return ResponseEntity.badRequest().build();
         }

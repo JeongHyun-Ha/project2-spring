@@ -38,4 +38,5 @@ public interface MemberMapper {
             WHERE id = #{id}
             """)
     void update(Member member);
+
 }

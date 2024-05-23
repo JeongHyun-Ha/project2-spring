@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -20,10 +21,9 @@ public class MemberController {
 
     @PostMapping("/signup")
     public ResponseEntity signup(@RequestBody Member member) {
-        if (memberService.validate(member)) {
+        if (!memberService.validate(member)) {
             return ResponseEntity.badRequest().build();
         }
-        log.info("member={}", member);
         memberService.add(member);
         return ResponseEntity.ok().build();
     }
@@ -80,6 +80,16 @@ public class MemberController {
 
         memberService.edit(member);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/token")
+    public ResponseEntity token(@RequestBody Member member) {
+        Map<String, Object> map = memberService.getToken(member);
+        if (map == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } else {
+            return ResponseEntity.ok().body(map);
+        }
     }
 
 }

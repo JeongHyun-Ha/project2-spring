@@ -5,10 +5,16 @@ import com.prj2.mapper.member.MemberMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -18,6 +24,7 @@ public class MemberService {
 
     final MemberMapper mapper;
     final BCryptPasswordEncoder passwordEncoder;
+    final JwtEncoder encoder;
 
     public void add(Member member) {
         member.setPassword(passwordEncoder.encode(member.getPassword()));
@@ -99,5 +106,32 @@ public class MemberService {
         }
 
         return passwordEncoder.matches(member.getOldPassword(), dbMember.getPassword());
+    }
+
+    public Map<String, Object> getToken(Member member) {
+        Map<String, Object> result = null;
+
+        Member dbMember = mapper.selectByEmail(member.getEmail());
+        if (dbMember != null) {
+            if (passwordEncoder.matches(member.getPassword(), dbMember.getPassword())) {
+                result = new HashMap<>();
+                String token = "";
+                Instant now = Instant.now();
+                JwtClaimsSet claims = JwtClaimsSet.builder()
+                        .issuer("self")
+                        .issuedAt(now)
+                        .expiresAt(now.plusSeconds(60 * 60 * 24 * 7))
+                        .subject(member.getEmail())
+                        .claim("scope", "") // 권한
+                        .claim("nickName", dbMember.getNickName())
+                        .build();
+
+                token = encoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+
+                result.put("token", token);
+            }
+        }
+
+        return result;
     }
 }
