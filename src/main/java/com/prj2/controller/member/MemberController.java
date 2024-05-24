@@ -54,12 +54,18 @@ public class MemberController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Member> info(@PathVariable Integer id) {
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Member> info(@PathVariable Integer id,
+                                       Authentication authentication) {
+        if (!memberService.hasAccess(id, authentication)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
 
         Member member = memberService.getById(id);
         if (member == null) {
             return ResponseEntity.notFound().build();
         }
+
         return ResponseEntity.ok().body(member);
     }
 
@@ -77,8 +83,10 @@ public class MemberController {
     }
 
     @PutMapping("/edit")
-    public ResponseEntity<Member> edit(@RequestBody Member member) {
-        if (!memberService.hasAccessEdit(member)) {
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Member> edit(@RequestBody Member member,
+                                       Authentication authentication) {
+        if (!memberService.hasAccessEdit(member, authentication)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 

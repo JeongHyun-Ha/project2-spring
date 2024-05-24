@@ -38,8 +38,15 @@ DESC member;
 SELECT *
 FROM member;
 
-select *
-from member;
-DELETE
-FROM member
-WHERE id = 23;
+# 권한 테이블
+CREATE TABLE authority
+(
+    member_id INT         NOT NULL REFERENCES member (id),
+    name      VARCHAR(20) NOT NULL,
+    PRIMARY KEY (member_id, name)
+);
+SELECT *
+FROM authority;
+
+INSERT INTO authority (member_id, name)
+VALUES (30, 'admin');

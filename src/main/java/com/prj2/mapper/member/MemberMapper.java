@@ -39,4 +39,10 @@ public interface MemberMapper {
     @Delete("DELETE FROM member WHERE id=#{id}")
     void deleteById(Integer id);
 
+    @Select("""
+            SELECT *
+            FROM authority
+            WHERE member_id=#{memberId}
+            """)
+    List<String> selectAuthorityByMemberId(Integer memberId);
 }

@@ -17,6 +17,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -106,7 +107,14 @@ public class MemberService {
         return passwordEncoder.matches(member.getPassword(), dbMember.getPassword());
     }
 
-    public boolean hasAccessEdit(Member member) {
+    public boolean hasAccess(Integer id, Authentication authentication) {
+        return authentication.getName().equals(id.toString());
+    }
+
+    public boolean hasAccessEdit(Member member, Authentication authentication) {
+        if (!authentication.getName().equals(member.getId().toString())) {
+            return false;
+        }
         Member dbMember = memberMapper.selectById(member.getId());
 
         if (dbMember == null) {
@@ -125,12 +133,18 @@ public class MemberService {
                 result = new HashMap<>();
                 String token = "";
                 Instant now = Instant.now();
+
+                List<String> authority = memberMapper.selectAuthorityByMemberId(dbMember.getId());
+                String authorityString = authority.stream()
+                        .collect(Collectors.joining(" "));
+
+
                 JwtClaimsSet claims = JwtClaimsSet.builder()
                         .issuer("self")
                         .issuedAt(now)
                         .expiresAt(now.plusSeconds(60 * 60 * 24 * 7))
                         .subject(dbMember.getId().toString())
-                        .claim("scope", "") // 권한
+                        .claim("scope", authorityString) // 권한
                         .claim("nickName", dbMember.getNickName())
                         .build();
 
