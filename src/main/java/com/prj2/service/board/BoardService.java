@@ -51,4 +51,10 @@ public class BoardService {
     public void edit(Board board) {
         boardMapper.update(board);
     }
+
+    public boolean hasAccess(Integer id, Authentication authentication) {
+        Board board = boardMapper.selectById(id);
+
+        return board.getMemberId().equals(Integer.valueOf(authentication.getName()));
+    }
 }
