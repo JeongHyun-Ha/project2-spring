@@ -37,3 +37,9 @@ CREATE TABLE member
 DESC member;
 SELECT *
 FROM member;
+
+select *
+from member;
+DELETE
+FROM member
+WHERE id = 23;

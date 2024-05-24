@@ -1,6 +1,7 @@
 package com.prj2.service.member;
 
 import com.prj2.domain.member.Member;
+import com.prj2.mapper.board.BoardMapper;
 import com.prj2.mapper.member.MemberMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,24 +24,25 @@ import java.util.Map;
 @Transactional(rollbackFor = Exception.class)
 public class MemberService {
 
-    final MemberMapper mapper;
+    final MemberMapper memberMapper;
     final BCryptPasswordEncoder passwordEncoder;
     final JwtEncoder encoder;
+    private final BoardMapper boardMapper;
 
     public void add(Member member) {
         member.setPassword(passwordEncoder.encode(member.getPassword()));
         member.setEmail(member.getEmail().trim());
         member.setNickName(member.getNickName().trim());
 
-        mapper.insert(member);
+        memberMapper.insert(member);
     }
 
     public Member getByEmail(String email) {
-        return mapper.selectByEmail(email.trim());
+        return memberMapper.selectByEmail(email.trim());
     }
 
     public Member getByNickName(String nickName) {
-        return mapper.selectByNickName(nickName.trim());
+        return memberMapper.selectByNickName(nickName.trim());
     }
 
     public boolean validate(Member member) {
@@ -66,15 +68,16 @@ public class MemberService {
     }
 
     public List<Member> list() {
-        return mapper.selectAll();
+        return memberMapper.selectAll();
     }
 
     public Member getById(Integer id) {
-        return mapper.selectById(id);
+        return memberMapper.selectById(id);
     }
 
     public void remove(Integer id) {
-        mapper.deleteById(id);
+        boardMapper.deleteByMemberId(id);
+        memberMapper.deleteById(id);
     }
 
     public void edit(Member member) {
@@ -83,10 +86,10 @@ public class MemberService {
             member.setPassword(passwordEncoder.encode(member.getPassword()));
         } else {
             log.info("기존 암호");
-            Member dbMember = mapper.selectById(member.getId());
+            Member dbMember = memberMapper.selectById(member.getId());
             member.setPassword(dbMember.getPassword());
         }
-        mapper.update(member);
+        memberMapper.update(member);
     }
 
     public boolean hasAccess(Member member, Authentication authentication) {
@@ -94,7 +97,7 @@ public class MemberService {
             return false;
         }
 
-        Member dbMember = mapper.selectById(member.getId());
+        Member dbMember = memberMapper.selectById(member.getId());
 
         if (dbMember == null) {
             return false;
@@ -104,7 +107,7 @@ public class MemberService {
     }
 
     public boolean hasAccessEdit(Member member) {
-        Member dbMember = mapper.selectById(member.getId());
+        Member dbMember = memberMapper.selectById(member.getId());
 
         if (dbMember == null) {
             return false;
@@ -116,7 +119,7 @@ public class MemberService {
     public Map<String, Object> getToken(Member member) {
         Map<String, Object> result = null;
 
-        Member dbMember = mapper.selectByEmail(member.getEmail());
+        Member dbMember = memberMapper.selectByEmail(member.getEmail());
         if (dbMember != null) {
             if (passwordEncoder.matches(member.getPassword(), dbMember.getPassword())) {
                 result = new HashMap<>();

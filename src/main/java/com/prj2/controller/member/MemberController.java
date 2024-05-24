@@ -65,7 +65,7 @@ public class MemberController {
 
     @DeleteMapping("/{id}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity delete(@RequestBody Member member,
+    public ResponseEntity remove(@RequestBody Member member,
                                  Authentication authentication) {
 
         if (memberService.hasAccess(member, authentication)) {

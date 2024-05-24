@@ -29,14 +29,14 @@ public interface MemberMapper {
             """)
     Member selectById(Integer id);
 
-    @Delete("DELETE FROM member WHERE id=#{id}")
-    void deleteById(Integer id);
-
     @Update("""
             UPDATE member
             SET password=#{password}, nick_name=#{nickName}
             WHERE id = #{id}
             """)
     void update(Member member);
+
+    @Delete("DELETE FROM member WHERE id=#{id}")
+    void deleteById(Integer id);
 
 }
