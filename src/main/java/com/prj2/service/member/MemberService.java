@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
@@ -81,7 +82,8 @@ public class MemberService {
         memberMapper.deleteById(id);
     }
 
-    public void edit(Member member) {
+    public Map<String, Object> edit(Member member, Authentication authentication) {
+        log.info("edit");
         if (member.getPassword() != null && member.getPassword().length() > 0) {
             log.info("새로운 암호");
             member.setPassword(passwordEncoder.encode(member.getPassword()));
@@ -91,6 +93,20 @@ public class MemberService {
             member.setPassword(dbMember.getPassword());
         }
         memberMapper.update(member);
+
+        String token = "";
+
+        Jwt jwt = (Jwt) authentication.getPrincipal();
+        Map<String, Object> claims = jwt.getClaims();
+
+        JwtClaimsSet.Builder builder = JwtClaimsSet.builder();
+        claims.forEach(builder::claim);
+        builder.claim("nickName", member.getNickName());
+
+        JwtClaimsSet jwtClaimsSet = builder.build();
+        token = encoder.encode(JwtEncoderParameters.from(jwtClaimsSet)).getTokenValue();
+
+        return Map.of("token", token);
     }
 
     public boolean hasAccess(Member member, Authentication authentication) {

@@ -85,14 +85,13 @@ public class MemberController {
 
     @PutMapping("/edit")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Member> edit(@RequestBody Member member,
-                                       Authentication authentication) {
+    public ResponseEntity edit(@RequestBody Member member,
+                               Authentication authentication) {
         if (!memberService.hasAccessEdit(member, authentication)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
-
-        memberService.edit(member);
-        return ResponseEntity.ok().build();
+        Map<String, Object> result = memberService.edit(member, authentication);
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping("/token")
