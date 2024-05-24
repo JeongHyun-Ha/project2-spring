@@ -14,10 +14,18 @@ public interface BoardMapper {
             """)
     int insert(Board board);
 
-    @Select("SELECT * FROM board ORDER BY id DESC ")
+    @Select("""
+            SELECT b.id, b.title, m.nick_name writer, b.inserted
+            FROM board b JOIN member m ON b.member_id = m.id
+            ORDER BY id DESC
+            """)
     List<Board> selectAll();
 
-    @Select("SELECT * FROM board WHERE id=#{id}")
+    @Select("""
+            SELECT b.id, b.title, b.content,m.nick_name writer, b.inserted
+            FROM board b JOIN member m ON b.member_id = m.id
+            WHERE b.id=#{id}
+            """)
     Board selectById(Integer id);
 
     @Delete("DELETE FROM board WHERE id=#{id}")
