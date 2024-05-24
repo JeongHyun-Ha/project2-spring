@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -62,14 +64,16 @@ public class MemberController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity delete(@RequestBody Member member) {
-        if (memberService.hasAccess(member)) {
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity delete(@RequestBody Member member,
+                                 Authentication authentication) {
+
+        if (memberService.hasAccess(member, authentication)) {
             memberService.remove(member.getId());
             return ResponseEntity.ok().build();
         }
 
-        // todo : forbidden으로 수정
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
     @PutMapping("/edit")
