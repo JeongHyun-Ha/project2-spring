@@ -40,7 +40,7 @@ public interface MemberMapper {
     void deleteById(Integer id);
 
     @Select("""
-            SELECT *
+            SELECT name
             FROM authority
             WHERE member_id=#{memberId}
             """)
