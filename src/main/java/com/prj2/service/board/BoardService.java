@@ -1,7 +1,6 @@
 package com.prj2.service.board;
 
 import com.prj2.domain.board.Board;
-import com.prj2.domain.member.Member;
 import com.prj2.mapper.board.BoardMapper;
 import com.prj2.mapper.member.MemberMapper;
 import lombok.RequiredArgsConstructor;
@@ -22,10 +21,7 @@ public class BoardService {
     private final MemberMapper memberMapper;
 
     public void add(Board board, Authentication authentication) {
-        log.info("authentication={}", authentication);
-        Member member = memberMapper.selectByEmail(authentication.getName());
-        log.info("member={}", member);
-        board.setMemberId(member.getId());
+        board.setMemberId(Integer.valueOf(authentication.getName()));
         boardMapper.insert(board);
     }
 
