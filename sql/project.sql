@@ -58,3 +58,21 @@ SELECT title, content, member_id
 FROM board;
 
 desc board;
+
+SELECT *
+FROM member;
+
+UPDATE member
+SET nick_name = 'abcd'
+WHERE id = 31;
+UPDATE member
+SET nick_name = 'efgh'
+WHERE id = 30;
+
+UPDATE board
+SET member_id = 30
+WHERE id % 2 = 0;
+UPDATE board
+SET member_id = 31
+WHERE id % 2 = 1;
+
