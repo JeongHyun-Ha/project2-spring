@@ -63,4 +63,6 @@ public interface BoardMapper {
             """)
     List<Board> selectAllPaging(Integer offset);
 
+    @Select("SELECT COUNT(*) FROM board ")
+    Integer countAll();
 }
