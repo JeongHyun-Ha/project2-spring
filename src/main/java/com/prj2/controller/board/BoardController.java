@@ -35,8 +35,8 @@ public class BoardController {
     }
 
     @GetMapping("/list")
-    public List<Board> list() {
-        return boardService.list();
+    public List<Board> list(@RequestParam(defaultValue = "1") Integer page) {
+        return boardService.selectAllPaging(page);
     }
 
     @GetMapping("/{id}")
@@ -60,7 +60,7 @@ public class BoardController {
         if (!boardService.validate(board)) {
             return ResponseEntity.badRequest().build();
         }
-        
+
         boardService.edit(board);
         return ResponseEntity.ok().build();
     }

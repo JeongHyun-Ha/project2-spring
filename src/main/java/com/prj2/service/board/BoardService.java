@@ -57,4 +57,10 @@ public class BoardService {
 
         return board.getMemberId().equals(Integer.valueOf(authentication.getName()));
     }
+
+    public List<Board> selectAllPaging(Integer page) {
+        Integer offset = (page - 1) * 10;
+        return boardMapper.selectAllPaging(offset);
+
+    }
 }
