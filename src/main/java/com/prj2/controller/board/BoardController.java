@@ -37,7 +37,7 @@ public class BoardController {
     @GetMapping("/list")
     public Map<String, Object> list(@RequestParam(defaultValue = "1") Integer page) {
 
-        return boardService.selectAllPaging(page);
+        return boardService.list(page);
     }
 
     @GetMapping("/{id}")

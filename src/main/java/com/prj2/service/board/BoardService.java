@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -38,8 +37,17 @@ public class BoardService {
         return true;
     }
 
-    public List<Board> list() {
-        return boardMapper.selectAll();
+    public Map<String, Object> list(Integer page) {
+        Map<String, Object> pageInfo = new HashMap<>();
+        Integer countAll = boardMapper.countAll();
+
+        Integer offset = (page - 1) * 10;
+        Integer lastPageNumber = (countAll - 1) / 10 + 1;
+
+        pageInfo.put("currentPageNumber", page);
+        pageInfo.put("lastPageNumber", lastPageNumber);
+
+        return Map.of("pageInfo", pageInfo, "boardList", boardMapper.selectAllPaging(offset));
     }
 
     public Board get(Integer id) {
@@ -58,19 +66,5 @@ public class BoardService {
         Board board = boardMapper.selectById(id);
 
         return board.getMemberId().equals(Integer.valueOf(authentication.getName()));
-    }
-
-    public Map<String, Object> selectAllPaging(Integer page) {
-        Map<String, Object> pageInfo = new HashMap<>();
-        Integer countAll = boardMapper.countAll();
-
-        Integer offset = (page - 1) * 10;
-        Integer lastPageNumber = (countAll - 1) / 10 + 1;
-
-        pageInfo.put("currentPageNumber", page);
-        pageInfo.put("lastPageNumber", lastPageNumber);
-
-        return Map.of("pageInfo", pageInfo, "boardList", boardMapper.selectAllPaging(offset));
-
     }
 }
