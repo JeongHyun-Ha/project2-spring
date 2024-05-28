@@ -1,6 +1,7 @@
 package com.prj2.service.board;
 
 import com.prj2.domain.board.Board;
+import com.prj2.domain.board.BoardFile;
 import com.prj2.mapper.board.BoardMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -93,11 +94,11 @@ public class BoardService {
         Board board = boardMapper.selectById(id);
         List<String> fileNames = boardMapper.selectFileNameByBoardId(id);
 
-        List<String> imageSrcList = fileNames.stream()
-                .map(name -> STR."http://172.26.160.1:8888/\{id}/\{name}")
+        List<BoardFile> files = fileNames.stream()
+                .map(name -> new BoardFile(name, STR."http://172.26.160.1:8888/\{id}/\{name}"))
                 .toList();
 
-        board.setImageSrcList(imageSrcList);
+        board.setFiles(files);
 
         return board;
     }
