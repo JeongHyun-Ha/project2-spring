@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -59,8 +60,11 @@ public class BoardController {
 
     @PutMapping("/edit")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity edit(@RequestBody Board board,
+    public ResponseEntity edit(Board board,
+                               @RequestParam(value = "removeFileList[]", required = false) List<String> removeFileList,
+                               @RequestParam(value = "addFileList[]", required = false) MultipartFile[] addFileList,
                                Authentication authentication) {
+
         if (!boardService.hasAccess(board.getId(), authentication)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
@@ -68,7 +72,7 @@ public class BoardController {
             return ResponseEntity.badRequest().build();
         }
 
-        boardService.edit(board);
+        boardService.edit(board, removeFileList);
         return ResponseEntity.ok().build();
     }
 

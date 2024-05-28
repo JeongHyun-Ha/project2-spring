@@ -39,10 +39,10 @@ public interface BoardMapper {
 
     @Update("""
             UPDATE board
-            SET title=#{title}, content=#{content}, member_id=#{memberId}
+            SET title=#{title}, content=#{content}
             WHERE id=#{id}
             """)
-    void update(Board board);
+    int update(Board board);
 
     @Delete("DELETE FROM board WHERE id=#{id}")
     int deleteById(Integer id);
@@ -108,7 +108,7 @@ public interface BoardMapper {
             INSERT INTO board_file (board_id, name)
             VALUES (#{boardId}, #{name})
             """)
-    void insertFileName(Integer boardId, String name);
+    int insertFileName(Integer boardId, String name);
 
     @Select("""
             SELECT name
@@ -121,7 +121,7 @@ public interface BoardMapper {
             DELETE FROM board_file
             WHERE board_id=#{boardId}
             """)
-    void deleteFileByBoardId(Integer boardId);
+    int deleteFileByBoardId(Integer boardId);
 
     @Select("""
             SELECT id
@@ -129,4 +129,11 @@ public interface BoardMapper {
             WHERE member_id=#{memberId}
             """)
     List<Board> selectByMemberId(Integer memberId);
+
+    @Delete("""
+            DELETE FROM board_file
+            WHERE board_id=#{boardId}
+              AND name=#{fileName}
+            """)
+    int deleteFileByBoardIdAndName(Integer boardId, String fileName);
 }

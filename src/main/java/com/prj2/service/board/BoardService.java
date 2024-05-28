@@ -98,7 +98,7 @@ public class BoardService {
                 .map(name -> new BoardFile(name, STR."http://172.26.160.1:8888/\{id}/\{name}"))
                 .toList();
 
-        board.setFiles(files);
+        board.setFileList(files);
 
         return board;
     }
@@ -122,7 +122,18 @@ public class BoardService {
         boardMapper.deleteById(id);
     }
 
-    public void edit(Board board) {
+    public void edit(Board board, List<String> removeFileList) {
+        if (removeFileList != null && removeFileList.size() > 0) {
+            for (String fileName : removeFileList) {
+                // disk의 파일 삭제
+                String path = STR."C:/Temp/prj2/\{board.getId()}/\{fileName}";
+                File file = new File(path);
+                file.delete();
+                // db records 삭제
+                boardMapper.deleteFileByBoardIdAndName(board.getId(), fileName);
+            }
+        }
+
         boardMapper.update(board);
     }
 
