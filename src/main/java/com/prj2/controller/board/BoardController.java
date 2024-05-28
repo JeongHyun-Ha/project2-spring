@@ -11,6 +11,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Map;
 
 @Slf4j
@@ -25,7 +26,7 @@ public class BoardController {
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity add(Board board,
                               @RequestParam(value = "files[]", required = false) MultipartFile[] files,
-                              Authentication authentication) {
+                              Authentication authentication) throws IOException {
 
         // 검증
         if (!boardService.validate(board)) {
