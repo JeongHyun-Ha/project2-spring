@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -89,10 +90,35 @@ public class BoardService {
     }
 
     public Board get(Integer id) {
-        return boardMapper.selectById(id);
+        Board board = boardMapper.selectById(id);
+        List<String> fileNames = boardMapper.selectFileNameByBoardId(id);
+
+        // http://172.30.1.57:8888/{id}/{name}
+        List<String> imageSrcList = fileNames.stream()
+                .map(name -> STR."http://172.26.160.1:8888/\{id}/\{name}")
+                .toList();
+
+        board.setImageSrcList(imageSrcList);
+
+        return board;
     }
 
     public void remove(Integer id) {
+        // file 명 조회
+        List<String> filesNames = boardMapper.selectFileNameByBoardId(id);
+        // 실제 파일 지우기
+        String dir = STR."C:/Temp/prj2/\{id}/";
+        for (String fileName : filesNames) {
+            File file = new File(dir + fileName);
+            file.delete();
+        }
+        File dirFile = new File(dir);
+        if (dirFile.exists()) {
+            dirFile.delete();
+        }
+        // board_file 지우기
+        boardMapper.deleteFileByBoardId(id);
+        // board
         boardMapper.deleteById(id);
     }
 

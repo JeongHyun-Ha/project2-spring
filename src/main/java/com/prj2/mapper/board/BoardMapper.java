@@ -109,4 +109,17 @@ public interface BoardMapper {
             VALUES (#{boardId}, #{name})
             """)
     void insertFileName(Integer boardId, String name);
+
+    @Select("""
+            SELECT name
+            FROM board_file
+            WHERE board_id=#{boardId}
+            """)
+    List<String> selectFileNameByBoardId(Integer boardId);
+
+    @Delete("""
+            DELETE FROM board_file
+            WHERE board_id=#{boardId}
+            """)
+    void deleteFileByBoardId(Integer boardId);
 }
