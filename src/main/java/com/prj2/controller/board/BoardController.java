@@ -72,7 +72,7 @@ public class BoardController {
             return ResponseEntity.badRequest().build();
         }
 
-        boardService.edit(board, removeFileList);
+        boardService.edit(board, removeFileList, addFileList);
         return ResponseEntity.ok().build();
     }
 
