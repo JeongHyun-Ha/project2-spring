@@ -122,4 +122,11 @@ public interface BoardMapper {
             WHERE board_id=#{boardId}
             """)
     void deleteFileByBoardId(Integer boardId);
+
+    @Select("""
+            SELECT id
+            FROM board
+            WHERE member_id=#{memberId}
+            """)
+    List<Board> selectByMemberId(Integer memberId);
 }

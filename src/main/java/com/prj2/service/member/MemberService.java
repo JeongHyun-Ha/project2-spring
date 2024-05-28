@@ -1,8 +1,10 @@
 package com.prj2.service.member;
 
+import com.prj2.domain.board.Board;
 import com.prj2.domain.member.Member;
 import com.prj2.mapper.board.BoardMapper;
 import com.prj2.mapper.member.MemberMapper;
+import com.prj2.service.board.BoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -30,6 +32,7 @@ public class MemberService {
     final BCryptPasswordEncoder passwordEncoder;
     final JwtEncoder encoder;
     private final BoardMapper boardMapper;
+    private final BoardService boardService;
 
     public void add(Member member) {
         member.setPassword(passwordEncoder.encode(member.getPassword()));
@@ -78,7 +81,8 @@ public class MemberService {
     }
 
     public void remove(Integer id) {
-        boardMapper.deleteByMemberId(id);
+        List<Board> boardList = boardMapper.selectByMemberId(id);
+        boardList.forEach(board -> boardService.remove(board.getId()));
         memberMapper.deleteById(id);
     }
 
