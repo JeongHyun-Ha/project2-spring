@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 
@@ -22,15 +23,16 @@ public class BoardController {
 
     @PostMapping("/add")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Board> add(@RequestBody Board board,
-                                     Authentication authentication) {
+    public ResponseEntity add(Board board,
+                              @RequestParam(value = "files[]", required = false) MultipartFile[] files,
+                              Authentication authentication) {
 
         // 검증
         if (!boardService.validate(board)) {
             return ResponseEntity.badRequest().build();
         }
 
-        boardService.add(board, authentication);
+        boardService.add(board, files, authentication);
         return ResponseEntity.ok().build();
     }
 
