@@ -101,7 +101,8 @@ public class BoardService {
         return Map.of("pageInfo", pageInfo, "boardList", boardMapper.selectAllPaging(offset, searchType, keyword));
     }
 
-    public Board get(Integer id) {
+    public Map<String, Object> get(Integer id, Authentication authentication) {
+        Map<String, Object> result = new HashMap<>();
         Board board = boardMapper.selectById(id);
         List<String> fileNames = boardMapper.selectFileNameByBoardId(id);
 
@@ -111,7 +112,19 @@ public class BoardService {
 
         board.setFileList(files);
 
-        return board;
+        Map<String, Object> like = new HashMap<>();
+        if (authentication == null) {
+            like.put("like", false);
+        } else {
+            int count = boardMapper.selectLikeByBoardIdAndMemberId(id, authentication.getName());
+            like.put("like", count == 1);
+        }
+        like.put("count", boardMapper.selectCountLikeByBoardId(id));
+
+        result.put("board", board);
+        result.put("like", like);
+
+        return result;
     }
 
     public void remove(Integer id) {
