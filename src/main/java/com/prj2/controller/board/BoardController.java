@@ -88,4 +88,12 @@ public class BoardController {
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
+
+    @PutMapping("/like")
+    @PreAuthorize("isAuthenticated()")
+    public void like(@RequestBody Map<String, Object> req,
+                     Authentication authentication) {
+
+        boardService.like(req, authentication);
+    }
 }

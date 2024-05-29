@@ -180,4 +180,18 @@ public class BoardService {
 
         return board.getMemberId().equals(Integer.valueOf(authentication.getName()));
     }
+
+    public void like(Map<String, Object> req, Authentication authentication) {
+
+        Integer boardId = (Integer) req.get("boardId");
+        Integer memberId = Integer.valueOf(authentication.getName());
+
+        // 이미 했으면
+        int count = boardMapper.deleteLikeByBoardIdAndMemberId(boardId, memberId);
+
+        // 안했으면
+        if (count == 1) {
+            boardMapper.insertLikeByBoardIdAndMemberId(boardId, memberId);
+        }
+    }
 }
