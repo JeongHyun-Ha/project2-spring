@@ -5,11 +5,16 @@ import com.prj2.domain.board.BoardFile;
 import com.prj2.mapper.board.BoardMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,6 +31,12 @@ public class BoardService {
     private final BoardMapper boardMapper;
     final S3Client s3Client;
 
+    @Value("${aws.s3.bucket.name}")
+    String bucketName;
+
+    @Value("${image.src.prefix}")
+    String srcPrefix;
+
     public void add(Board board, MultipartFile[] files, Authentication authentication) throws IOException {
         board.setMemberId(Integer.valueOf(authentication.getName()));
         boardMapper.insert(board);
@@ -34,18 +45,17 @@ public class BoardService {
             for (MultipartFile file : files) {
                 // db에 해당 게시물의 파일 목록 저장
                 boardMapper.insertFileName(board.getId(), file.getOriginalFilename());
-                // 실제 파일 저장
-                // 부모 디렉토리 만들기
-                String dir = STR."C:/Temp/prj2/\{board.getId()}";
-                File dirFile = new File(dir);
-                if (!dirFile.exists()) {
-                    dirFile.mkdirs();
-                }
 
-                // 파일 경로
-                String path = STR."C:/Temp/prj2/\{board.getId()}/\{file.getOriginalFilename()}";
-                File destination = new File(path);
-                file.transferTo(destination);
+                String key = STR."prj2/\{board.getId()}/\{file.getOriginalFilename()}";
+
+                PutObjectRequest objectRequest = PutObjectRequest.builder()
+                        .bucket(bucketName)
+                        .key(key)
+                        .acl(ObjectCannedACL.PUBLIC_READ)
+                        .build();
+                // 실제 파일 저장(s3)
+                s3Client.putObject(objectRequest,
+                        RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
             }
         }
 
@@ -97,7 +107,7 @@ public class BoardService {
         List<String> fileNames = boardMapper.selectFileNameByBoardId(id);
 
         List<BoardFile> files = fileNames.stream()
-                .map(name -> new BoardFile(name, STR."http://172.26.160.1:8888/\{id}/\{name}"))
+                .map(name -> new BoardFile(name, STR."\{srcPrefix}/\{id}/\{name}"))
                 .toList();
 
         board.setFileList(files);
@@ -108,16 +118,18 @@ public class BoardService {
     public void remove(Integer id) {
         // file 명 조회
         List<String> filesNames = boardMapper.selectFileNameByBoardId(id);
-        // 실제 파일 지우기
-        String dir = STR."C:/Temp/prj2/\{id}/";
-        for (String fileName : filesNames) {
-            File file = new File(dir + fileName);
-            file.delete();
+
+        // s3에 있는 파일 지우기
+        for (String filesName : filesNames) {
+            String key = STR."prj2/\{id}/\{filesName}";
+            DeleteObjectRequest objectRequest = DeleteObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(key)
+                    .build();
+
+            s3Client.deleteObject(objectRequest);
         }
-        File dirFile = new File(dir);
-        if (dirFile.exists()) {
-            dirFile.delete();
-        }
+
         // board_file 지우기
         boardMapper.deleteFileByBoardId(id);
         // board
