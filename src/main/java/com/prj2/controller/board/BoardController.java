@@ -91,10 +91,14 @@ public class BoardController {
 
     @PutMapping("/like")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity like(@RequestBody Map<String, Object> req,
-                               Authentication authentication) {
+    public Map<String, Object> like(@RequestBody Map<String, Object> req,
+                                    Authentication authentication) {
 
-        boardService.like(req, authentication);
-        return ResponseEntity.ok().build();
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        return boardService.like(req, authentication);
     }
 }
