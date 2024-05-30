@@ -101,3 +101,5 @@ DELETE
 FROM board_like
 WHERE member_id = 1;
 
+
+
