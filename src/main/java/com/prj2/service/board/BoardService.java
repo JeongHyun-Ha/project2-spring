@@ -144,6 +144,8 @@ public class BoardService {
 
         // board_file 지우기
         boardMapper.deleteFileByBoardId(id);
+        // board_like 지우기
+        boardMapper.deleteLikeByBoardId(id);
         // board
         boardMapper.deleteById(id);
     }

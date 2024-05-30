@@ -117,32 +117,12 @@ public interface BoardMapper {
             """)
     List<String> selectFileNameByBoardId(Integer boardId);
 
-    @Delete("""
-            DELETE FROM board_file
-            WHERE board_id=#{boardId}
-            """)
-    int deleteFileByBoardId(Integer boardId);
-
     @Select("""
             SELECT id
             FROM board
             WHERE member_id=#{memberId}
             """)
     List<Board> selectByMemberId(Integer memberId);
-
-    @Delete("""
-            DELETE FROM board_file
-            WHERE board_id=#{boardId}
-              AND name=#{fileName}
-            """)
-    int deleteFileByBoardIdAndName(Integer boardId, String fileName);
-
-    @Delete("""
-            DELETE FROM board_like
-            WHERE board_id=#{boardId}
-              AND member_id=#{memberId}
-            """)
-    int deleteLikeByBoardIdAndMemberId(Integer boardId, Integer memberId);
 
     @Insert("""
             INSERT INTO board_like (board_id, member_id)
@@ -164,4 +144,30 @@ public interface BoardMapper {
               AND member_id=#{memberId}
             """)
     int selectLikeByBoardIdAndMemberId(Integer boardId, String memberId);
+
+    @Delete("""
+            DELETE FROM board_file
+            WHERE board_id=#{boardId}
+            """)
+    int deleteFileByBoardId(Integer boardId);
+
+    @Delete("""
+            DELETE FROM board_file
+            WHERE board_id=#{boardId}
+              AND name=#{fileName}
+            """)
+    int deleteFileByBoardIdAndName(Integer boardId, String fileName);
+
+    @Delete("""
+            DELETE FROM board_like
+            WHERE board_id=#{boardId}
+              AND member_id=#{memberId}
+            """)
+    int deleteLikeByBoardIdAndMemberId(Integer boardId, Integer memberId);
+
+    @Delete("""
+            DELETE FROM board_like
+            WHERE board_id=#{boardId}
+            """)
+    void deleteLikeByBoardId(Integer boardId);
 }
