@@ -82,7 +82,9 @@ public class MemberService {
 
     public void remove(Integer id) {
         List<Board> boardList = boardMapper.selectByMemberId(id);
+        // 각 게시물 지우기
         boardList.forEach(board -> boardService.remove(board.getId()));
+        memberMapper.deleteLikeByMemberId(id);
         memberMapper.deleteById(id);
     }
 
