@@ -101,5 +101,16 @@ DELETE
 FROM board_like
 WHERE member_id = 1;
 
+# 댓글 테이블
+CREATE TABLE comment
+(
+    id        INT PRIMARY KEY AUTO_INCREMENT,
+    board_id  INT          NOT NULL REFERENCES board (id),
+    member_id INT          NOT NULL REFERENCES member (id),
+    comment   VARCHAR(500) NOT NULL,
+    inserted  DATETIME     NOT NULL DEFAULT NOW()
+);
+SELECT *
+FROM comment;
 
 
