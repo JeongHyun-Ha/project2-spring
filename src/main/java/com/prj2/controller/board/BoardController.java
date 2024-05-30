@@ -94,12 +94,6 @@ public class BoardController {
     @PreAuthorize("isAuthenticated()")
     public Map<String, Object> like(@RequestBody Map<String, Object> req,
                                     Authentication authentication) {
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
         return boardService.like(req, authentication);
     }
 
