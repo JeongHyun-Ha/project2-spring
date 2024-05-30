@@ -35,5 +35,5 @@ public class CommentController {
 
         return commentService.list(boardId);
     }
-
+//
 }
