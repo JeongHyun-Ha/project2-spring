@@ -35,5 +35,9 @@ public class CommentController {
 
         return commentService.list(boardId);
     }
-//
+
+    @DeleteMapping("/remove")
+    public void remove(@RequestBody Comment comment, Authentication authentication) {
+        commentService.remove(comment);
+    }
 }
