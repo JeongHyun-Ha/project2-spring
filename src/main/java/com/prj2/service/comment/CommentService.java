@@ -2,6 +2,7 @@ package com.prj2.service.comment;
 
 import com.prj2.domain.comment.Comment;
 import com.prj2.mapper.comment.CommentMapper;
+import com.prj2.mapper.member.MemberMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -17,6 +18,7 @@ import java.util.List;
 public class CommentService {
 
     private final CommentMapper commentMapper;
+    private final MemberMapper memberMapper;
 
     public void add(Comment comment, Authentication authentication) {
         comment.setMemberId(Integer.valueOf(authentication.getName()));
@@ -43,5 +45,16 @@ public class CommentService {
 
     public void remove(Comment comment) {
         commentMapper.deleteById(comment.getId());
+    }
+
+    public boolean hasAccess(Comment comment, Authentication authentication) {
+        Comment db = commentMapper.selectById(comment.getId());
+        if (db == null) {
+            return false;
+        }
+        if (!authentication.getName().equals(db.getMemberId().toString())) {
+            return false;
+        }
+        return true;
     }
 }

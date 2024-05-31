@@ -4,6 +4,7 @@ import com.prj2.domain.comment.Comment;
 import com.prj2.service.comment.CommentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -37,7 +38,13 @@ public class CommentController {
     }
 
     @DeleteMapping("/remove")
-    public void remove(@RequestBody Comment comment, Authentication authentication) {
+    public ResponseEntity remove(@RequestBody Comment comment, Authentication authentication) {
+
+        if (!commentService.hasAccess(comment, authentication)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
         commentService.remove(comment);
+        return ResponseEntity.ok().build();
     }
 }

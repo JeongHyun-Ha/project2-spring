@@ -3,6 +3,7 @@ package com.prj2.service.member;
 import com.prj2.domain.board.Board;
 import com.prj2.domain.member.Member;
 import com.prj2.mapper.board.BoardMapper;
+import com.prj2.mapper.comment.CommentMapper;
 import com.prj2.mapper.member.MemberMapper;
 import com.prj2.service.board.BoardService;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,7 @@ public class MemberService {
     final JwtEncoder encoder;
     private final BoardMapper boardMapper;
     private final BoardService boardService;
+    private final CommentMapper commentMapper;
 
     public void add(Member member) {
         member.setPassword(passwordEncoder.encode(member.getPassword()));
@@ -85,6 +87,7 @@ public class MemberService {
         // 각 게시물 지우기
         boardList.forEach(board -> boardService.remove(board.getId()));
         memberMapper.deleteLikeByMemberId(id);
+        commentMapper.deleteByMemberId(id);
         memberMapper.deleteById(id);
     }
 
