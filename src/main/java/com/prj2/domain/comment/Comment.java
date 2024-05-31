@@ -18,10 +18,10 @@ public class Comment {
     public String getInserted() {
         LocalDateTime beforeOneDay = LocalDateTime.now().minusDays(1);
         if (inserted.isBefore(beforeOneDay)) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy.MM.dd");
             return inserted.format(formatter);
         } else {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh시 mm분");
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm");
             return inserted.format(formatter);
         }
     }
