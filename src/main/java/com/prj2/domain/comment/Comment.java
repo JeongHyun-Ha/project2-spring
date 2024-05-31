@@ -19,10 +19,10 @@ public class Comment {
         LocalDateTime beforeOneDay = LocalDateTime.now().minusDays(1);
         if (inserted.isBefore(beforeOneDay)) {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일");
-            return inserted.format(formatter).toString();
+            return inserted.format(formatter);
         } else {
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh시 mm분");
-            return inserted.format(formatter).toString();
+            return inserted.format(formatter);
         }
     }
 }
