@@ -47,4 +47,10 @@ public class CommentController {
         commentService.remove(comment);
         return ResponseEntity.ok().build();
     }
+
+    @PutMapping("/edit")
+    public void edit(@RequestBody Comment comment, Authentication authentication) {
+
+        commentService.update(comment);
+    }
 }
